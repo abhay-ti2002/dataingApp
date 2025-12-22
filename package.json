@@ -2,7 +2,7 @@
   "name": "tinderproject",
   "version": "1.0.0",
   "description": "tinder app for dev",
-  "main": "index.js",
+  "main": "./src/app.js",
   "scripts": {
     "start": "node ./scr/app.js",
     "dev": "nodemon ./src/app.js"
