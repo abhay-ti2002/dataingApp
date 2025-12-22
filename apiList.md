@@ -33,3 +33,4 @@ GET /user/feed - Gets you the profiles of other users on platform
 
 ## query parameter
 "/feed?page=1&limit=10;
+

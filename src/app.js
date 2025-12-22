@@ -1,9 +1,13 @@
 const express = require("express");
 const { connectDB } = require("./config/database");
 const app = express();
-const port = 4000;
+// const port = 4000;
 const cookiesParser = require("cookie-parser");
 const cors = require("cors");
+require("dotenv").config();
+
+// console.log(process.env);
+
 // const User = require("./models/user");
 // const { validationSignUpData } = require("./utils/validation");
 // const bcrypt = require("bcrypt");
@@ -25,11 +29,13 @@ const authRouter = require("./routes/authrouter");
 const profileRouter = require("./routes/profile");
 const connectionRouter = require("./routes/request");
 const userRouter = require("./routes/user");
+const paymentRouter = require("./routes/payment");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRouter);
 app.use("/", userRouter);
+app.use("/", paymentRouter);
 
 // let's build a API
 // app.post("/signup", async (req, res) => {
@@ -194,7 +200,7 @@ app.use("/", userRouter);
 connectDB()
   .then(() => {
     console.log("Connected to database");
-    app.listen(port, () => {
+    app.listen(process.env.PORT, () => {
       console.log("Serevr start sucessfully in port 4000...");
     });
   })

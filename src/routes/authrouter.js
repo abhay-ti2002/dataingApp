@@ -20,8 +20,11 @@ authRouter.post("/singup", async (req, res) => {
       phoneno,
       gender,
     });
-    await user.save();
-    res.send("chlo bhai aaj ka task complete hua");
+    const saveUser = await user.save();
+    const token = await saveUser.getJWT();
+    res.cookie("token", token);
+
+    res.send({ message: "chlo bhai aaj ka task complete hua", data: saveUser });
   } catch (error) {
     res.status(400).send("Error in add a user data" + " " + error.message);
   }
@@ -35,8 +38,8 @@ authRouter.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid credential");
     }
-    const isValidatePassword = user.validatePassword(password);
-
+    const isValidatePassword = await user.validatePassword(password);
+    console.log("ghhg", isValidatePassword);
     if (isValidatePassword) {
       const token = await user.getJWT();
       res.cookie("token", token);
@@ -50,7 +53,9 @@ authRouter.post("/login", async (req, res) => {
 });
 
 authRouter.post("/logout", (req, res) => {
-  res.cookie("token", null);
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+  });
   res.send("Logout Successfuly");
 });
 
