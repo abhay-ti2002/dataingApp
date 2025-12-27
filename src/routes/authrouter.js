@@ -22,7 +22,13 @@ authRouter.post("/singup", async (req, res) => {
     });
     const saveUser = await user.save();
     const token = await saveUser.getJWT();
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      domain: ".heartmatch.com",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.send({ message: "chlo bhai aaj ka task complete hua", data: saveUser });
   } catch (error) {
@@ -42,12 +48,13 @@ authRouter.post("/login", async (req, res) => {
     console.log("ghhg", isValidatePassword);
     if (isValidatePassword) {
       const token = await user.getJWT();
-     res.cookie("token", token, {
-       httpOnly: true, // cannot be accessed by JS
-       secure: true, // only HTTPS
-       sameSite: "None", // allows cross-domain
-       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-     });
+      res.cookie("token", token, {
+        httpOnly: true, // cannot be accessed by JS
+        secure: true, // only HTTPS
+        sameSite: "None", // allows cross-domain
+        domain: ".heartmatch.com",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
 
       res.send(user);
     } else {
@@ -60,7 +67,11 @@ authRouter.post("/login", async (req, res) => {
 
 authRouter.post("/logout", (req, res) => {
   res.cookie("token", null, {
-    expires: new Date(Date.now()),
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    domain: ".heartmatch.com",
+    path: "/",
   });
   res.send("Logout Successfuly");
 });
