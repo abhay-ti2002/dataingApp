@@ -1,31 +1,17 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const authRouter = express.Router();
 const User = require("../models/user");
 const { validationSignUpData } = require("../utils/validation");
+const bcrypt = require("bcrypt");
 const { validateLoginEmail } = require("../utils/loginValidation");
 
-// Helper to get cookie domain based on environment
-const getCookieDomain = () => {
-  return process.env.NODE_ENV === "production"
-    ? process.env.COOKIE_DOMAIN
-    : "localhost";
-};
-
-// SIGNUP
-authRouter.post("/signup", async (req, res) => {
+authRouter.post("/singup", async (req, res) => {
   try {
     validationSignUpData(req);
-
     const { name, userName, email, password, age, phoneno, gender } = req.body;
-
-    // Hash password
     const saltRound = 10;
     const passwordHash = await bcrypt.hash(password, saltRound);
-
-    // Create user
-    const user = new User({
+    const user = await new User({
       name,
       userName,
       email,
@@ -34,73 +20,60 @@ authRouter.post("/signup", async (req, res) => {
       phoneno,
       gender,
     });
-
-    const savedUser = await user.save();
-
-    // Generate JWT
-    const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-
-    // Set cookie
+    const saveUser = await user.save();
+    const token = await saveUser.getJWT();
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "None",
-      domain: getCookieDomain(),
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-
-    // Send sanitized user data
-    const { password: pw, ...userData } = savedUser._doc;
-    res.send({ message: "User registered successfully", data: userData });
-  } catch (error) {
-    res.status(400).send("Error in signup: " + error.message);
-  }
-});
-
-// LOGIN
-authRouter.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    validateLoginEmail(email);
-
-    const user = await User.findOne({ email });
-    if (!user) throw new Error("Invalid credentials");
-
-    const isValidPassword = await user.validatePassword(password);
-    if (!isValidPassword) throw new Error("Password is incorrect");
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "None",
-      domain: getCookieDomain(),
+      domain: ".heartmatch.com",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    const { password: pw, ...userData } = user._doc;
-    res.send({ message: "Login successful", data: userData });
+    res.send({ message: "chlo bhai aaj ka task complete hua", data: saveUser });
   } catch (error) {
-    res.status(400).send("Error: " + error.message);
+    res.status(400).send("Error in add a user data" + " " + error.message);
   }
 });
 
-// LOGOUT
+authRouter.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    validateLoginEmail(email);
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      throw new Error("Invalid credential");
+    }
+    const isValidatePassword = await user.validatePassword(password);
+    console.log("ghhg", isValidatePassword);
+    if (isValidatePassword) {
+      const token = await user.getJWT();
+      res.cookie("token", token, {
+        httpOnly: true, // cannot be accessed by JS
+        secure: true, // only HTTPS
+        sameSite: "None", // allows cross-domain
+        domain: ".heartmatch.com",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      res.send(user);
+    } else {
+      throw new Error("password is not correct and account is not exists");
+    }
+  } catch (error) {
+    res.status(400).send("Error:" + " " + error.massage);
+  }
+});
+
 authRouter.post("/logout", (req, res) => {
   res.cookie("token", null, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     sameSite: "None",
-    domain: getCookieDomain(),
+    domain: ".heartmatch.com",
     path: "/",
   });
-  res.send("Logout successful");
+  res.send("Logout Successfuly");
 });
 
 module.exports = authRouter;
