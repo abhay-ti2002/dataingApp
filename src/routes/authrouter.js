@@ -66,10 +66,12 @@ authRouter.post("/login", async (req, res) => {
 });
 
 authRouter.post("/logout", (req, res) => {
+  const isProd = process.env.NODE_ENV === "production";
   res.cookie("token", null, {
     httpOnly: true,
-    secure: true,
-    sameSite: "None",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+    domain: isProd ? ".heartmatch.app" : undefined,
     path: "/",
   });
   res.send("Logout Successfuly");
