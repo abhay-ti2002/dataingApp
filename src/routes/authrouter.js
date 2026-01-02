@@ -37,6 +37,7 @@ authRouter.post("/singup", async (req, res) => {
 
 authRouter.post("/login", async (req, res) => {
   try {
+    const isProd = process.env.NODE_ENV === "production";
     const { email, password } = req.body;
     validateLoginEmail(email);
     const user = await User.findOne({ email: email });
@@ -48,10 +49,11 @@ authRouter.post("/login", async (req, res) => {
     if (isValidatePassword) {
       const token = await user.getJWT();
       res.cookie("token", token, {
-        httpOnly: true, // cannot be accessed by JS
-        secure: true, // only HTTPS
-        sameSite: "None", // allows cross-domain
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        httpOnly: true,
+        secure: isProd, // true only in prod
+        sameSite: isProd ? "none" : "lax",
+        domain: isProd ? ".heartmatch.app" : undefined,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
       res.send(user);
