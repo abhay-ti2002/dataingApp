@@ -26,7 +26,6 @@ authRouter.post("/singup", async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      domain: ".heartmatch.com",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -52,7 +51,6 @@ authRouter.post("/login", async (req, res) => {
         httpOnly: true, // cannot be accessed by JS
         secure: true, // only HTTPS
         sameSite: "None", // allows cross-domain
-        domain: ".heartmatch.com",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
 
@@ -70,7 +68,6 @@ authRouter.post("/logout", (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "None",
-    domain: ".heartmatch.com",
     path: "/",
   });
   res.send("Logout Successfuly");
