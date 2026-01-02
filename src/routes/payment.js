@@ -4,7 +4,7 @@ const { userAuth } = require("../middleWare/auth");
 const razorpayInstance = require("../utils/razorpay");
 const paymentCollectionModel = require("../models/paymentCollection");
 const membershipAmount = require("../utils/constant");
-console.log(membershipAmount);
+// console.log(membershipAmount);
 
 paymentRoute.post("/payment/create", userAuth, async (req, res) => {
   try {

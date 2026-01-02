@@ -72,7 +72,7 @@ userSchema.methods.getJWT = async function () {
 };
 
 userSchema.methods.validatePassword = async function (passwordInputByUser) {
-  console.log(typeof passwordInputByUser);
+  // console.log(typeof passwordInputByUser);
   const user = this;
   const passwordHash = user.password;
 

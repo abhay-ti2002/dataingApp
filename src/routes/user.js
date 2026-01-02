@@ -28,7 +28,7 @@ userRouter.get("/user/requests/recieved", userAuth, async (req, res) => {
 userRouter.get("/user/connection", userAuth, async (req, res) => {
   try {
     const logginInUser = req.user;
-    console.log(logginInUser._id);
+    // console.log(logginInUser._id);
     const connection = await ConnectionRequestModel.find({
       $or: [
         { toUserId: logginInUser._id, status: "accepted" },
@@ -62,7 +62,7 @@ userRouter.get("/user/connection", userAuth, async (req, res) => {
 userRouter.get("/user/feed", userAuth, async (req, res) => {
   try {
     const loggInUser = req.user;
-    console.log({ toUserId: loggInUser._id });
+    // console.log({ toUserId: loggInUser._id });
 
     let page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 10;
@@ -80,7 +80,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
       hideUserFromFeed.add(req.toUserId.toString());
     });
 
-    console.log("hidde", hideUserFromFeed);
+    // console.log("hidde", hideUserFromFeed);
 
     const users = await User.find({
       $and: [
@@ -101,7 +101,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    console.log(users);
+    // console.log(users);
 
     res.status(200).json({ data: users });
   } catch (error) {

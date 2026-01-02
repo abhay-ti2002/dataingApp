@@ -77,7 +77,7 @@ connectionRouter.post(
         toUserId: logginUserId._id,
         status: "interested",
       });
-      console.log(connectionRequest);
+      // console.log(connectionRequest);
 
       if (!connectionRequest) {
         return res
