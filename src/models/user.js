@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
     },
     phoneNo: { type: Number },
     email: {
@@ -57,8 +56,21 @@ const userSchema = new mongoose.Schema(
     skills: {
       type: [String],
     },
+    // -------------email-verification------------
+    isEmailVerification: {
+      type: Boolean,
+      default: false,
+    },
+
+    emailOtp: {
+      type: String,
+    },
+
+    emailOtpExpire: {
+      type: Date,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.methods.getJWT = async function () {

@@ -5,9 +5,7 @@ const validationSignUpData = (req) => {
 
   if (!name || !userName) {
     throw new Error("Name is Empty");
-  } else if (!validator.isAlphanumeric(userName)) {
-    throw new Error("UserName must be in alphabet and number like xyz333");
-  } else if (!validator.isEmail(email)) {
+  }  else if (!validator.isEmail(email)) {
     throw new Error("Email is not correct");
   } else if (!validator.isStrongPassword(password)) {
     throw new Error("Password not correct form");
