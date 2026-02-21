@@ -20,7 +20,7 @@ authRouter.post("/singup", async (req, res) => {
     //hash password
     const saltRound = 10;
     const passwordHash = await bcrypt.hash(password, saltRound);
-    // const isProd = process.env.NODE_ENV === "production";
+    const isProd = process.env.NODE_ENV === "production";
 
     //Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -88,7 +88,7 @@ authRouter.post("/verify-otp", async (req, res) => {
 
     await user.save();
 
-    // const isProd = process.env.NODE_ENV === "production";
+    const isProd = process.env.NODE_ENV === "production";
     const token = await user.getJWT();
     res.cookie("token", token, {
       httpOnly: true,
