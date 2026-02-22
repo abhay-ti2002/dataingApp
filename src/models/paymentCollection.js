@@ -20,10 +20,10 @@ const paymentCollectionSchema = new mongoose.Schema(
     recepit: { type: String, require: true },
     notes: {
       userName: { type: String },
-      memberShipType: { type: String },
+      memberShipType: { type: String, default: "Free" },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const paymentCollectionModel = mongoose.model(

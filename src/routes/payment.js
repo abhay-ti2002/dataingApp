@@ -1,9 +1,13 @@
 const express = require("express");
 const paymentRoute = express.Router();
 const { userAuth } = require("../middleWare/auth");
+const User = require("../models/user");
 const razorpayInstance = require("../utils/razorpay");
 const paymentCollectionModel = require("../models/paymentCollection");
 const membershipAmount = require("../utils/constant");
+const {
+  validateWebhookSignature,
+} = require("razorpay/dist/utils/razorpay-utils");
 // console.log(membershipAmount);
 
 paymentRoute.post("/payment/create", userAuth, async (req, res) => {
@@ -43,6 +47,51 @@ paymentRoute.post("/payment/create", userAuth, async (req, res) => {
     res.json({ savePayment, keyId: process.env.RAZORPAY_KEY_ID });
   } catch (error) {
     return res.status(500).json({ msg: error.message });
+  }
+});
+
+paymentRoute.post("/payment/webhook", async (req, res) => {
+  try {
+    /* NODE SDK: https://github.com/razorpay/razorpay-node */
+    const webhookSignature = req.headers["x-razorpay-signature"];
+    const isWebhookValid = validateWebhookSignature(
+      JSON.stringify(req.body),
+      webhookSignature,
+      process.env.RAZORPAY_WEBHOOK_SECRET,
+    );
+    // #webhook_body should be raw webhook request body
+
+    if (!isWebhookValid) {
+      return res.status(400).json({ msg: "Invalid webhook signature" });
+    }
+
+    const paymentDetails = req.body.payload.payment.entity;
+
+    const payment = await paymentCollectionModel.findOne({
+      orderId: paymentDetails.order_id,
+    });
+
+    if (!payment) {
+      return res.status(404).json({ msg: "Payment not found" });
+    }
+
+    payment.status = paymentDetails.status;
+    await payment.save();
+
+    const user = await User.findOne({ _id: payment.userId });
+    user.isPremium = true;
+    user.membershipType = payment.notes.memberShipType;
+    await user.save();
+
+    // if (request.body.event === "payment.captured") {
+    //   // payment.status = "captured";
+    // }
+    // if (req.body.event === "payment.failed") {
+    //   // payment.status = "failed";
+    // }
+    res.json({ message: "Webhook received and validated" });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
   }
 });
 
