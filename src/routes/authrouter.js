@@ -104,6 +104,8 @@ authRouter.post("/verify-otp", async (req, res) => {
   }
 });
 
+// -----------------------------login-api--------------------------------
+
 authRouter.post("/login", async (req, res) => {
   try {
     const isProd = process.env.NODE_ENV === "production";

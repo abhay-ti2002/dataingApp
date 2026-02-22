@@ -17,9 +17,13 @@ require("dotenv").config();
 
 app.use(
   cors({
-    origin: ["https://heartmatch.app", "http://localhost:5173"],
+    origin: [
+      "https://www.heartmatch.app",
+      "https://heartmatch.app",
+      "http://localhost:5173",
+    ],
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -31,7 +35,7 @@ const connectionRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 const paymentRouter = require("./routes/payment");
 
-app.use("/", authRouter); 
+app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRouter);
 app.use("/", userRouter);
@@ -205,6 +209,7 @@ connectDB()
     });
   })
   .catch((error) => {
+    console.error("Error connecting to database:", error);
     console.log("Not connect to database");
   });
 
