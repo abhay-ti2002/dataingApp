@@ -92,10 +92,10 @@ authRouter.post("/verify-otp", async (req, res) => {
     const token = await user.getJWT();
     res.cookie("token", token, {
       httpOnly: true,
-      // secure: true,
-      // sameSite: "None",
-      // domain: isProd ? ".heartmatch.app" : undefined,
-      // maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: true,
+      sameSite: "None",
+      domain: isProd ? ".heartmatch.app" : undefined,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.json({ message: "Email verified successfully", user });
@@ -128,10 +128,10 @@ authRouter.post("/login", async (req, res) => {
       const token = await user.getJWT();
       res.cookie("token", token, {
         httpOnly: true,
-        // secure: isProd, // true only in prod
-        // sameSite: isProd ? "none" : "lax",
-        // domain: isProd ? ".heartmatch.app" : undefined, //this is not Work in localhost
-        // maxAge: 7 * 24 * 60 * 60 * 1000,
+        secure: isProd, // true only in prod
+        sameSite: isProd ? "none" : "lax",
+        domain: isProd ? ".heartmatch.app" : undefined, //this is not Work in localhost
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
       res.send(user);
@@ -154,10 +154,10 @@ authRouter.post("/logout", (req, res) => {
 
   res.cookie("token", null, {
     httpOnly: true,
-    // secure: isProd,
-    // sameSite: isProd ? "none" : "lax",
-    // domain: isProd ? ".heartmatch.app" : undefined,
-    // path: "/",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+    domain: isProd ? ".heartmatch.app" : undefined,
+    path: "/",
   });
   res.send("Logout Successfuly");
 });
