@@ -59,6 +59,7 @@ paymentRoute.post("/payment/webhook", async (req, res) => {
       webhookSignature,
       process.env.RAZORPAY_WEBHOOK_SECRET,
     );
+    console.log("Webhook Validity:", isWebhookValid);
     // #webhook_body should be raw webhook request body
 
     if (!isWebhookValid) {
