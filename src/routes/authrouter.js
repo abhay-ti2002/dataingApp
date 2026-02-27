@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const { validateLoginEmail } = require("../utils/loginValidation");
 const { sendEmail } = require("../utils/sendEmail");
 
-authRouter.post("/singup", async (req, res) => {
+authRouter.post("/signup", async (req, res) => {
   try {
     validationSignUpData(req);
     const { name, userName, email, password } = req.body;
