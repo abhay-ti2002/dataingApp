@@ -92,8 +92,8 @@ authRouter.post("/verify-otp", async (req, res) => {
     const token = await user.getJWT();
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       domain: isProd ? ".heartmatch.app" : undefined,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });

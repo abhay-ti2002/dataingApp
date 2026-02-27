@@ -1,4 +1,7 @@
+const dns = require("dns");
+dns.setServers(["1.1.1.1"]);
 const express = require("express");
+
 const { connectDB } = require("./config/database");
 const app = express();
 // const port = 4000;
@@ -212,5 +215,3 @@ connectDB()
     console.error("Error connecting to database:", error);
     console.log("Not connect to database");
   });
-
-  
