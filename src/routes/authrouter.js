@@ -20,7 +20,6 @@ authRouter.post("/signup", async (req, res) => {
     //hash password
     const saltRound = 10;
     const passwordHash = await bcrypt.hash(password, saltRound);
-    const isProd = process.env.NODE_ENV === "production";
 
     //Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -92,7 +91,7 @@ authRouter.post("/verify-otp", async (req, res) => {
     const token = await user.getJWT();
     res.cookie("token", token, {
       httpOnly: true,
-      secure: isProd,
+      secure: true,
       sameSite: isProd ? "none" : "lax",
       domain: isProd ? ".heartmatch.app" : undefined,
       maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -128,7 +127,7 @@ authRouter.post("/login", async (req, res) => {
       const token = await user.getJWT();
       res.cookie("token", token, {
         httpOnly: true,
-        secure: isProd, // true only in prod
+        secure: true, // true only in prod
         sameSite: isProd ? "none" : "lax",
         domain: isProd ? ".heartmatch.app" : undefined, //this is not Work in localhost
         maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -154,7 +153,7 @@ authRouter.post("/logout", (req, res) => {
 
   res.cookie("token", null, {
     httpOnly: true,
-    secure: isProd,
+    secure: true,
     sameSite: isProd ? "none" : "lax",
     domain: isProd ? ".heartmatch.app" : undefined,
     path: "/",
