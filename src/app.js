@@ -30,7 +30,6 @@ app.use(
 );
 
 
-const paymentRouter = require("./routes/payment");
 
 app.use("/", paymentRouter);
 
@@ -41,6 +40,7 @@ const authRouter = require("./routes/authrouter");
 const profileRouter = require("./routes/profile");
 const connectionRouter = require("./routes/request");
 const userRouter = require("./routes/user");
+const paymentRouter = require("./routes/payment");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
