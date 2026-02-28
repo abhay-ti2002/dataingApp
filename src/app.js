@@ -29,6 +29,10 @@ app.use(
   }),
 );
 
+
+app.use("/", userRouter);
+
+
 app.use(express.json());
 app.use(cookiesParser());
 
@@ -41,7 +45,6 @@ const paymentRouter = require("./routes/payment");
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRouter);
-app.use("/", userRouter);
 app.use("/", paymentRouter);
 
 // let's build a API
