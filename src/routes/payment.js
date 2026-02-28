@@ -62,7 +62,7 @@ paymentRoute.post(
         req.body.payload.payment.entity,
       );
       const isWebhookValid = validateWebhookSignature(
-        JSON.parse(req.body.toString()),
+        req.body,
         webhookSignature,
         process.env.RAZORPAY_WEBHOOK_SECRET,
       );
@@ -73,7 +73,8 @@ paymentRoute.post(
         return res.status(400).json({ msg: "Invalid webhook signature" });
       }
 
-      const paymentDetails = req.body.payload.payment.entity;
+      const body = JSON.parse(req.body.toString());
+      const paymentDetails = body.payload.payment.entity;
       console.log("Payment Details:", paymentDetails);
 
       const payment = await paymentCollectionModel.findOne({
