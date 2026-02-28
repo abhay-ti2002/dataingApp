@@ -52,7 +52,6 @@ paymentRoute.post("/payment/create", userAuth, async (req, res) => {
 
 paymentRoute.post(
   "/payment/webhook",
-  express.raw({ type: "application/json" }),
   async (req, res) => {
     try {
       /* NODE SDK: https://github.com/razorpay/razorpay-node */
