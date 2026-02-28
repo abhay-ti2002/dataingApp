@@ -60,7 +60,6 @@ paymentRoute.post(
       console.log(
         "Received Webhook:",
         webhookSignature,
-        req.body.payload.payment.entity,
       );
       const isWebhookValid = validateWebhookSignature(
         req.body,
