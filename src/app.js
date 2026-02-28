@@ -31,7 +31,6 @@ app.use(
 
 
 
-app.use("/", paymentRouter);
 
 app.use(express.json());
 app.use(cookiesParser());
@@ -46,6 +45,7 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRouter);
 app.use("/", userRouter);
+app.use("/", paymentRouter);
 
 // let's build a API
 // app.post("/signup", async (req, res) => {
