@@ -50,51 +50,55 @@ paymentRoute.post("/payment/create", userAuth, async (req, res) => {
   }
 });
 
-paymentRoute.post("/payment/webhook", async (req, res) => {
-  try {
-    /* NODE SDK: https://github.com/razorpay/razorpay-node */
-    const webhookSignature = req.headers["x-razorpay-signature"];
-    console.log("Received Webhook:", webhookSignature, req.body);
-    const isWebhookValid = validateWebhookSignature(
-      JSON.parse(req.body.toString()),
-      webhookSignature,
-      process.env.RAZORPAY_WEBHOOK_SECRET,
-    );
-    // console.log("Webhook Validity:", isWebhookValid);
-    // #webhook_body should be raw webhook request body
+paymentRoute.post(
+  "/payment/webhook",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    try {
+      /* NODE SDK: https://github.com/razorpay/razorpay-node */
+      const webhookSignature = req.headers["x-razorpay-signature"];
+      console.log("Received Webhook:", webhookSignature, req.body);
+      const isWebhookValid = validateWebhookSignature(
+        JSON.parse(req.body.toString()),
+        webhookSignature,
+        process.env.RAZORPAY_WEBHOOK_SECRET,
+      );
+      // console.log("Webhook Validity:", isWebhookValid);
+      // #webhook_body should be raw webhook request body
 
-    if (!isWebhookValid) {
-      return res.status(400).json({ msg: "Invalid webhook signature" });
+      if (!isWebhookValid) {
+        return res.status(400).json({ msg: "Invalid webhook signature" });
+      }
+
+      const paymentDetails = req.body.payload.payment.entity;
+
+      const payment = await paymentCollectionModel.findOne({
+        orderId: paymentDetails.order_id,
+      });
+
+      if (!payment) {
+        return res.status(404).json({ msg: "Payment not found" });
+      }
+
+      payment.status = paymentDetails.status;
+      await payment.save();
+
+      const user = await User.findOne({ _id: payment.userId });
+      user.isPremium = true;
+      user.membershipType = payment.notes.memberShipType;
+      await user.save();
+
+      // if (request.body.event === "payment.captured") {
+      //   // payment.status = "captured";
+      // }
+      // if (req.body.event === "payment.failed") {
+      //   // payment.status = "failed";
+      // }
+      res.json({ message: "Webhook received and validated" });
+    } catch (error) {
+      res.status(500).json({ msg: error.message });
     }
-
-    const paymentDetails = req.body.payload.payment.entity;
-
-    const payment = await paymentCollectionModel.findOne({
-      orderId: paymentDetails.order_id,
-    });
-
-    if (!payment) {
-      return res.status(404).json({ msg: "Payment not found" });
-    }
-
-    payment.status = paymentDetails.status;
-    await payment.save();
-
-    const user = await User.findOne({ _id: payment.userId });
-    user.isPremium = true;
-    user.membershipType = payment.notes.memberShipType;
-    await user.save();
-
-    // if (request.body.event === "payment.captured") {
-    //   // payment.status = "captured";
-    // }
-    // if (req.body.event === "payment.failed") {
-    //   // payment.status = "failed";
-    // }
-    res.json({ message: "Webhook received and validated" });
-  } catch (error) {
-    res.status(500).json({ msg: error.message });
-  }
-});
+  },
+);
 
 module.exports = paymentRoute;
