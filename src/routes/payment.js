@@ -54,8 +54,8 @@ paymentRoute.post("/payment/webhook", async (req, res) => {
   
   try {
     /* NODE SDK: https://github.com/razorpay/razorpay-node */
-    const webhookSignature = req.get["X-Razorpay-Signature"];
-    const isWebhookValid = validateWebhookSignature(
+    const webhookSignature = req.headers["x-razorpay-signature"];
+    const isWebhookValid = await validateWebhookSignature(
       JSON.stringify(req.body),
       webhookSignature,
       process.env.RAZORPAY_WEBHOOK_SECRET,
