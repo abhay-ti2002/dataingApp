@@ -56,13 +56,17 @@ paymentRoute.post(
     try {
       /* NODE SDK: https://github.com/razorpay/razorpay-node */
       const webhookSignature = req.headers["x-razorpay-signature"];
-      console.log("Received Webhook:", webhookSignature, req.body);
+      console.log(
+        "Received Webhook:",
+        webhookSignature,
+        req.body.payload.payment.entity,
+      );
       const isWebhookValid = validateWebhookSignature(
         JSON.parse(req.body.toString()),
         webhookSignature,
         process.env.RAZORPAY_WEBHOOK_SECRET,
       );
-      // console.log("Webhook Validity:", isWebhookValid);
+      console.log("Webhook Validity:", isWebhookValid);
       // #webhook_body should be raw webhook request body
 
       if (!isWebhookValid) {
@@ -70,10 +74,12 @@ paymentRoute.post(
       }
 
       const paymentDetails = req.body.payload.payment.entity;
+      console.log("Payment Details:", paymentDetails);
 
       const payment = await paymentCollectionModel.findOne({
         orderId: paymentDetails.order_id,
       });
+      console.log("Payment Record:", payment);
 
       if (!payment) {
         return res.status(404).json({ msg: "Payment not found" });
